@@ -1,0 +1,21 @@
+addvar::toPrint
+cpp::class::extern "C" void kernel_main(void* multiboot_structure, int magicNumber) {
+cpp::class::	toPrint = "Hello World!\nWelcome to HirrixOS coded only in Linit and Assembly"
+cpp::class::	printf();
+cpp::class::	while (1);
+cpp::class::}
+newfunc::printf
+cpp::printf::	static short* VideoMemory = (short*) 0xb8000;
+cpp::printf::	static char x = 0, y = 0;
+cpp::printf::	for (int i = 0; toPrint[i] = '\0'; i++) {
+cpp::printf::		switch (toPrint[i]) {
+cpp::printf::			case '\n':
+cpp::printf::				y++;
+cpp::printf::				x = 0;
+cpp::printf::				break;
+cpp::printf::			default:
+cpp::printf::				VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | toPrint[i];
+cpp::printf::				x++;
+cpp::printf::				break;
+cpp::printf::		}
+cpp::printf::	}
