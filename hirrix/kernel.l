@@ -49,7 +49,8 @@ func terminal_init
 	
 	def fg_vga_entry_color_arg = 7 ; Définit la valeur de l'argument fg de vga_entry_color()
 	def bg_vga_entry_color_arg = 0 ; Définit la valeur de l'argument bg de vga_entry_color()
-	call vga_entry_color; égal à vga_entry_color(7, 0)
+	cpp vga_entry_color();// égal à vga_entry_color(7, 0)
+	
 	def terminal_color = vga_entry_color_return ; Récupère le return de vga_entry_color
 	
 	cpp terminal_buffer = (short*) 0xb8000; // Définit l'adresse ou se situe les entrée VGA
@@ -57,7 +58,7 @@ func terminal_init
 	; Permet de supprimer tout ce qu'il y a écrit sur l'écran VGA
 	cpp for (char y = 0; y < VGA_HEIGHT; y++) {
 	cpp %tfor (char x = 0; x < VGA_WIDTH; x++) {
-	cpp %t%tterminal_buffer[y * VGA_HEIGHT + x] = vga_entry(' ', terminal_color);
+	cpp %t%tterminal_buffer[y * VGA_HEIGHT + x] = (terminal_buffer[y * VGA_HEIGHT + x] & 0xFF00) | vga_entry(' ', terminal_color);
 	cpp %t}
 	cpp }
 end
@@ -82,7 +83,12 @@ var terminal_putentryat_index ; Méthode pour récupérer une entrée dans le ta
 
 func terminal_putentryat
 	cpp terminal_putentryat_index = terminal_putentryat_y * VGA_HEIGHT + terminal_putentryat_x;
-	cpp terminal_buffer[terminal_putentryat_index] = vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+	cpp if (terminal_putentryat_arg_char == '\n') {
+	cpp %tterminal_column = 0;
+	cpp %tterminal_row++;
+	cpp } else {
+	cpp %tterminal_buffer[terminal_putentryat_index] = (terminal_buffer[terminal_putentryat_index] & 0xFF00) | vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+	cpp }
 end
 ;=====================================
 
@@ -120,6 +126,7 @@ cpp}
 ; Méthode kernel_main C++
 cpp extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
 cpp %tkernel_init();
+cpp %tterminal_init();
 cpp %tterminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
 cpp %twhile(1);
 cpp }
