@@ -33,12 +33,12 @@ defvar::terminal_row@0 $terminal_init
 defvar::terminal_column@0 $terminal_init
 defvar::fg_vga_entry_color_arg@7 $terminal_init
 defvar::bg_vga_entry_color_arg@0 $terminal_init
-action::call$vga_entry_color@terminal_init
+cpp::terminal_init::vga_entry_color();// égal à vga_entry_color(7, 0)
 defvar::terminal_color@vga_entry_color_return $terminal_init
 cpp::terminal_init::terminal_buffer = (short*) 0xb8000; // Définit l'adresse ou se situe les entrée VGA
 cpp::terminal_init::for (char y = 0; y < VGA_HEIGHT; y++) {
 cpp::terminal_init::	for (char x = 0; x < VGA_WIDTH; x++) {
-cpp::terminal_init::		terminal_buffer[y * VGA_HEIGHT + x] = vga_entry(' ', terminal_color);
+cpp::terminal_init::		terminal_buffer[y * VGA_HEIGHT + x] = (terminal_buffer[y * VGA_HEIGHT + x] & 0xFF00) | vga_entry(' ', terminal_color);
 cpp::terminal_init::	}
 cpp::terminal_init::}
 cpp::class::int strlen(char* str){
@@ -54,7 +54,12 @@ addvar::terminal_putentryat_y
 addvar::terminal_putentryat_index
 newfunc::terminal_putentryat
 cpp::terminal_putentryat::terminal_putentryat_index = terminal_putentryat_y * VGA_HEIGHT + terminal_putentryat_x;
-cpp::terminal_putentryat::terminal_buffer[terminal_putentryat_index] = vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+cpp::terminal_putentryat::if (terminal_putentryat_arg_char == '\n') {
+cpp::terminal_putentryat::	terminal_column = 0;
+cpp::terminal_putentryat::	terminal_row++;
+cpp::terminal_putentryat::} else {
+cpp::terminal_putentryat::	terminal_buffer[terminal_putentryat_index] = (terminal_buffer[terminal_putentryat_index] & 0xFF00) | vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+cpp::terminal_putentryat::}
 cpp::class::void terminal_putchar(char c) {
 cpp::class::	terminal_putentryat_arg_char = c;
 cpp::class::	terminal_putentryat_arg_color = terminal_color;
@@ -78,6 +83,7 @@ cpp::class::	terminal_write(c, strlen(c));
 cpp::class::cpp}
 cpp::class::extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
 cpp::class::	kernel_init();
+cpp::class::	terminal_init();
 cpp::class::	terminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
 cpp::class::	while(1);
 cpp::class::}
