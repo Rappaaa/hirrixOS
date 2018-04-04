@@ -65,7 +65,7 @@ end
 
 ; strlen -> <text>.length C++ Permet de récupérer la longueur d'un texte
 cpp int strlen(char* str){
-cpp %tint len = 0
+cpp %tint len = 0;
 cpp %twhile(str[len])
 cpp %t%tlen++;
 cpp %treturn len;
@@ -112,7 +112,9 @@ cpp }
 ;======================================
 
 ; Méthode terminal_writestring
-cpp void terminal_writestring(char* c) { terminal_write(c, strlen(c)); }
+cpp void terminal_writestring(char* c) {
+cpp %tterminal_write(c, strlen(c));
+cpp}
 ;======================================
 
 ; Méthode kernel_main C++
