@@ -38,7 +38,7 @@ defvar::terminal_color@vga_entry_color_return $terminal_init
 cpp::terminal_init::terminal_buffer = (short*) 0xb8000; // Définit l'adresse ou se situe les entrée VGA
 cpp::terminal_init::for (char y = 0; y < VGA_HEIGHT; y++) {
 cpp::terminal_init::	for (char x = 0; x < VGA_WIDTH; x++) {
-cpp::terminal_init::		terminal_buffer[y * VGA_HEIGHT + x] = (terminal_buffer[y * VGA_HEIGHT + x] & 0xFF00) | vga_entry(' ', terminal_color);
+cpp::terminal_init::		terminal_buffer[y * VGA_WIDTH + x] = vga_entry(' ', terminal_color);
 cpp::terminal_init::	}
 cpp::terminal_init::}
 cpp::class::int strlen(char* str){
@@ -53,12 +53,12 @@ addvar::terminal_putentryat_x
 addvar::terminal_putentryat_y
 addvar::terminal_putentryat_index
 newfunc::terminal_putentryat
-cpp::terminal_putentryat::terminal_putentryat_index = terminal_putentryat_y * VGA_HEIGHT + terminal_putentryat_x;
+cpp::terminal_putentryat::terminal_putentryat_index = terminal_putentryat_y * VGA_WIDTH + terminal_putentryat_x;
 cpp::terminal_putentryat::if (terminal_putentryat_arg_char == '\n') {
 cpp::terminal_putentryat::	terminal_column = 0;
 cpp::terminal_putentryat::	terminal_row++;
 cpp::terminal_putentryat::} else {
-cpp::terminal_putentryat::	terminal_buffer[terminal_putentryat_index] = (terminal_buffer[terminal_putentryat_index] & 0xFF00) | vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+cpp::terminal_putentryat::	terminal_buffer[terminal_putentryat_index] = vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
 cpp::terminal_putentryat::}
 cpp::class::void terminal_putchar(char c) {
 cpp::class::	terminal_putentryat_arg_char = c;
