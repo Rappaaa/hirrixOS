@@ -1,21 +1,115 @@
-addvar::toPrint
-cpp::class::extern "C" void kernel_main(void* multiboot_structure, int magicNumber) {
-cpp::class::	toPrint = "Hello World!\nWelcome to HirrixOS coded only in Linit and Assembly"
-cpp::class::	printf();
-cpp::class::	while (1);
+addvar::VGA_WIDTH
+addvar::VGA_HEIGHT
+addvar::VGA_COLOR_BLACK
+addvar::VGA_COLOR_BLUE
+addvar::VGA_COLOR_GREEN
+addvar::VGA_COLOR_CYAN
+addvar::VGA_COLOR_RED
+addvar::VGA_COLOR_MAGENTA
+addvar::VGA_COLOR_BROWN
+addvar::VGA_COLOR_LIGHT_GREY
+addvar::VGA_COLOR_DARK_GREY
+addvar::VGA_COLOR_LIGHT_BLUE
+addvar::VGA_COLOR_LIGHT_GREEN
+addvar::VGA_COLOR_LIGHT_CYAN
+addvar::VGA_COLOR_LIGHT_RED
+addvar::VGA_COLOR_LIGHT_MAGENTA
+addvar::VGA_COLOR_LIGHT_BROWN
+addvar::VGA_COLOR_WHITE
+addvar::fg_vga_entry_color_arg
+addvar::bg_vga_entry_color_arg
+addvar::vga_entry_color_return
+newfunc::vga_entry_color
+cpp::vga_entry_color::vga_entry_color_return = fg_vga_entry_color_arg | bg_vga_entry_color_arg << 4;
+cpp::class::short vga_entry(unsigned char uc, char color) {
+cpp::class::	return (short) uc | (short) color << 8;
 cpp::class::}
-newfunc::printf
-cpp::printf::	static short* VideoMemory = (short*) 0xb8000;
-cpp::printf::	static char x = 0, y = 0;
-cpp::printf::	for (int i = 0; toPrint[i] = '\0'; i++) {
-cpp::printf::		switch (toPrint[i]) {
-cpp::printf::			case '\n':
-cpp::printf::				y++;
-cpp::printf::				x = 0;
-cpp::printf::				break;
-cpp::printf::			default:
-cpp::printf::				VideoMemory[80 * y + x] = (VideoMemory[80 * y + x] & 0xFF00) | toPrint[i];
-cpp::printf::				x++;
-cpp::printf::				break;
-cpp::printf::		}
-cpp::printf::	}
+addvar::terminal_row
+addvar::terminal_column
+addvar::terminal_color
+cpp::class::short* terminal_buffer;
+newfunc::terminal_init
+defvar::terminal_row@0 $terminal_init
+defvar::terminal_column@0 $terminal_init
+defvar::fg_vga_entry_color_arg@7 $terminal_init
+defvar::bg_vga_entry_color_arg@0 $terminal_init
+action::call$vga_entry_color@terminal_init
+defvar::terminal_color@vga_entry_color_return $terminal_init
+cpp::terminal_init::terminal_buffer = (short*) 0xb8000; // Définit l'adresse ou se situe les entrée VGA
+cpp::terminal_init::for (char y = 0; y < VGA_HEIGHT; y++) {
+cpp::terminal_init::	for (char x = 0; x < VGA_WIDTH; x++) {
+cpp::terminal_init::		terminal_buffer[y * VGA_HEIGHT + x] = vga_entry(' ', terminal_color);
+cpp::terminal_init::	}
+cpp::terminal_init::}
+cpp::class::int strlen(char* str){
+cpp::class::	int len = 0
+cpp::class::	while(str[len])
+cpp::class::		len++;
+cpp::class::	return len;
+cpp::class::}
+addvar::terminal_putentryat_arg_char
+addvar::terminal_putentryat_arg_color
+addvar::terminal_putentryat_x
+addvar::terminal_putentryat_y
+addvar::terminal_putentryat_index
+newfunc::terminal_putentryat
+cpp::terminal_putentryat::terminal_putentryat_index = terminal_putentryat_y * VGA_HEIGHT + terminal_putentryat_x;
+cpp::terminal_putentryat::terminal_buffer[terminal_putentryat_index] = vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+cpp::class::void terminal_putchar(char c) {
+cpp::class::	terminal_putentryat_arg_char = c;
+cpp::class::	terminal_putentryat_arg_color = terminal_color;
+cpp::class::	terminal_putentryat_x = terminal_column;
+cpp::class::	terminal_putentryat_y = terminal_row;
+cpp::class::	terminal_putentryat();
+cpp::class::	if (++terminal_column >= VGA_WIDTH) {
+cpp::class::		terminal_column = 0;
+cpp::class::		if (++terminal_row >= VGA_HEIGHT) {
+cpp::class::			terminal_row = 0;
+cpp::class::		}
+cpp::class::	}
+cpp::class::void terminal_write(char* c, int size) {
+cpp::class::	for (int index = 0; index < size; index++) { terminal_putchar(c[index]); }
+cpp::class::}
+cpp::class::void terminal_writestring(char* c) { terminal_write(c, strlen(c)); }
+cpp::class::extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
+cpp::class::	kernel_init();
+cpp::class::	terminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
+cpp::class::	while(1);
+cpp::class::}
+cpp::class::typedef void (*constructor)();
+cpp::class::extern "C" constructor start_ctors;
+cpp::class::extern "C" constructor end_ctors;
+cpp::class::extern "C" void callConstructors() {
+cpp::class::	for (constructor* i = &start_ctors; i != &end_ctors; i++)
+cpp::class::		(*i)();
+cpp::class::}
+newfunc::kernel_init
+defvar::fg_vga_entry_color_arg@15$kernel_init
+defvar::bg_vga_entry_color_arg@0$kernel_init
+defvar::vga_entry_color_return@-1 $kernel_init
+defvar::VGA_COLOR_BLACK@0$kernel_init
+defvar::VGA_COLOR_BLUE@1$kernel_init
+defvar::VGA_COLOR_GREEN@2$kernel_init
+defvar::VGA_COLOR_CYAN@3$kernel_init
+defvar::VGA_COLOR_RED@4$kernel_init
+defvar::VGA_COLOR_MAGENTA@5$kernel_init
+defvar::VGA_COLOR_BROWN@6$kernel_init
+defvar::VGA_COLOR_LIGHT_GREY@7$kernel_init
+defvar::VGA_COLOR_DARK_GREY@8$kernel_init
+defvar::VGA_COLOR_LIGHT_BLUE@9$kernel_init
+defvar::VGA_COLOR_LIGHT_GREEN@10$kernel_init
+defvar::VGA_COLOR_LIGHT_CYAN@11$kernel_init
+defvar::VGA_COLOR_LIGHT_RED@12$kernel_init
+defvar::VGA_COLOR_LIGHT_MAGENTA@13$kernel_init
+defvar::VGA_COLOR_LIGHT_BROWN@14$kernel_init
+defvar::VGA_COLOR_WHITE@15$kernel_init
+defvar::VGA_WIDTH@80$kernel_init
+defvar::VGA_HEIGHT@25$kernel_init
+defvar::terminal_putentryat_arg_char@-1 $kernel_init
+defvar::terminal_putentryat_arg_color@0$kernel_init
+defvar::terminal_putentryat_index@-32769$kernel_init
+defvar::terminal_putentryat_x@0$kernel_init
+defvar::terminal_putentryat_y@0$kernel_init
+defvar::terminal_color@0$kernel_init
+action::call$terminal_init@kernel_init
+
