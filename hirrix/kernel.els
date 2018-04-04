@@ -42,7 +42,7 @@ cpp::terminal_init::		terminal_buffer[y * VGA_HEIGHT + x] = vga_entry(' ', termi
 cpp::terminal_init::	}
 cpp::terminal_init::}
 cpp::class::int strlen(char* str){
-cpp::class::	int len = 0
+cpp::class::	int len = 0;
 cpp::class::	while(str[len])
 cpp::class::		len++;
 cpp::class::	return len;
@@ -73,7 +73,9 @@ cpp::class::	for (int index = 0; index < size; index++) {
 cpp::class::		terminal_putchar(c[index]);
 cpp::class::	}
 cpp::class::}
-cpp::class::void terminal_writestring(char* c) { terminal_write(c, strlen(c)); }
+cpp::class::void terminal_writestring(char* c) {
+cpp::class::	terminal_write(c, strlen(c));
+cpp::class::cpp}
 cpp::class::extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
 cpp::class::	kernel_init();
 cpp::class::	terminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
