@@ -67,8 +67,11 @@ cpp::class::		if (++terminal_row >= VGA_HEIGHT) {
 cpp::class::			terminal_row = 0;
 cpp::class::		}
 cpp::class::	}
+cpp::class::}
 cpp::class::void terminal_write(char* c, int size) {
-cpp::class::	for (int index = 0; index < size; index++) { terminal_putchar(c[index]); }
+cpp::class::	for (int index = 0; index < size; index++) {
+cpp::class::		terminal_putchar(c[index]);
+cpp::class::	}
 cpp::class::}
 cpp::class::void terminal_writestring(char* c) { terminal_write(c, strlen(c)); }
 cpp::class::extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
@@ -112,4 +115,3 @@ defvar::terminal_putentryat_x@0$kernel_init
 defvar::terminal_putentryat_y@0$kernel_init
 defvar::terminal_color@0$kernel_init
 action::call$terminal_init@kernel_init
-
