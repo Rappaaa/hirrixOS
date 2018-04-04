@@ -58,7 +58,7 @@ func terminal_init
 	; Permet de supprimer tout ce qu'il y a écrit sur l'écran VGA
 	cpp for (char y = 0; y < VGA_HEIGHT; y++) {
 	cpp %tfor (char x = 0; x < VGA_WIDTH; x++) {
-	cpp %t%tterminal_buffer[y * VGA_HEIGHT + x] = (terminal_buffer[y * VGA_HEIGHT + x] & 0xFF00) | vga_entry(' ', terminal_color);
+	cpp %t%tterminal_buffer[y * VGA_WIDTH + x] = vga_entry(' ', terminal_color);
 	cpp %t}
 	cpp }
 end
@@ -82,12 +82,12 @@ var terminal_putentryat_y ; Position Y
 var terminal_putentryat_index ; Méthode pour récupérer une entrée dans le tableau terminal_buffer[]
 
 func terminal_putentryat
-	cpp terminal_putentryat_index = terminal_putentryat_y * VGA_HEIGHT + terminal_putentryat_x;
+	cpp terminal_putentryat_index = terminal_putentryat_y * VGA_WIDTH + terminal_putentryat_x;
 	cpp if (terminal_putentryat_arg_char == '\n') {
 	cpp %tterminal_column = 0;
 	cpp %tterminal_row++;
 	cpp } else {
-	cpp %tterminal_buffer[terminal_putentryat_index] = (terminal_buffer[terminal_putentryat_index] & 0xFF00) | vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
+	cpp %tterminal_buffer[terminal_putentryat_index] = vga_entry(terminal_putentryat_arg_char, terminal_putentryat_arg_color);
 	cpp }
 end
 ;=====================================
