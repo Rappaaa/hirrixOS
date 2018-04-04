@@ -99,12 +99,14 @@ cpp %t%tif (++terminal_row >= VGA_HEIGHT) {
 cpp %t%t%tterminal_row = 0;
 cpp %t%t}
 cpp %t}
-
+cpp }
 ;======================================
 
 ; Méthode terminal_write C++
 cpp void terminal_write(char* c, int size) {
-cpp %tfor (int index = 0; index < size; index++) { terminal_putchar(c[index]); }
+cpp %tfor (int index = 0; index < size; index++) {
+cpp %t%tterminal_putchar(c[index]);
+cpp %t}
 cpp }
 
 ;======================================
