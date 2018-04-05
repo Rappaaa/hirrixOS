@@ -22,6 +22,13 @@ var VGA_COLOR_LIGHT_BROWN; 14
 var VGA_COLOR_WHITE; 15
 ; ==========================
 
+
+; Méthode put_pixel arguments
+var put_pixel_x_arg
+var put_pixel_y_arg
+var put_pixel_color_arg
+cpp unsigned char* screenAddress;
+
 ; Arguments pour la méthode vga_entry_color
 var fg_vga_entry_color_arg
 var bg_vga_entry_color_arg
@@ -126,7 +133,6 @@ cpp}
 ; Méthode kernel_main C++
 cpp extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
 cpp %tkernel_init();
-cpp %tdesktop_init();
 cpp %tterminal_init();
 cpp //%tterminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
 cpp %twhile(1);
@@ -181,6 +187,13 @@ func kernel_init
 	;==========================
 	def terminal_color = 0; Permet d'avoir un unsigned char
 	call terminal_init ; Initialisation du terminal
+	
+	; Initialisation des arguments pour la méthode put_pixel
+	def put_pixel_x_arg = 0
+	def put_pixel_y_arg = 0
+	def put_pixel_color_arg = -32769; -32769 -> Permet d'obtenir un entier in
+	cpp screenAddress = (char*) 0xA0000;
+	call terminal_init
 end
 
 ;===================================
@@ -188,14 +201,16 @@ end
 ; (c) Copyright Litikz 2018
 ; ==================================
 
+; Méthode put_pixel
+func put_pixel
+	cpp unsigned where = put_pixel_x_arg * 3 + put_pixel_y_arg * 2400;
+	screenAddress[where] = put_pixel_color_arg & 255;
+	screenAddress[where + 1] = (put_pixel_color_arg >> 8) & 255;
+	screenAddress[where + 2] = (put_pixel_color_arg >> 16) & 255;
+end
+
 ; Permet d'initialiser le bureau
 func desktop_init
-	; Initialisation des arguments pour la méthode put_pixel
-	def put_pixel_x_arg = 0
-	def put_pixel_y_arg = 0
-	def put_pixel_color_arg = -32769; -32769 -> Permet d'obtenir un entier in
-	cpp screenAddress = (char*) 0xA0000;
-	
 	def put_pixel_x_arg = 0
 	def put_pixel_y_arg = 0
 	def put_pixel_color_arg = 16711680; -32769 -> Permet d'obtenir un entier int
@@ -205,19 +220,4 @@ func desktop_init
 	def put_pixel_y_arg = 0
 	def put_pixel_color_arg = 16711680; -32769 -> Permet d'obtenir un entier int
 	call put_pixel
-end
-
-
-; Méthode put_pixel arguments
-var put_pixel_x_arg
-var put_pixel_y_arg
-var put_pixel_color_arg
-cpp unsigned char* screenAddress;
-
-; Méthode put_pixel
-func put_pixel
-	cpp unsigned where = put_pixel_x_arg * 3 + put_pixel_y_arg * 2400;
-	screenAddress[where] = put_pixel_color_arg & 255;
-	screenAddress[where + 1] = (put_pixel_color_arg >> 8) & 255;
-	screenAddress[where + 2] = (put_pixel_color_arg >> 16) & 255;
 end
