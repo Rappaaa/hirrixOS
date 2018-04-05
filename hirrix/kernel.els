@@ -16,6 +16,10 @@ addvar::VGA_COLOR_LIGHT_RED
 addvar::VGA_COLOR_LIGHT_MAGENTA
 addvar::VGA_COLOR_LIGHT_BROWN
 addvar::VGA_COLOR_WHITE
+addvar::put_pixel_x_arg
+addvar::put_pixel_y_arg
+addvar::put_pixel_color_arg
+cpp::class::unsigned char* screenAddress;
 addvar::fg_vga_entry_color_arg
 addvar::bg_vga_entry_color_arg
 addvar::vga_entry_color_return
@@ -83,7 +87,6 @@ cpp::class::	terminal_write(c, strlen(c));
 cpp::class::cpp}
 cpp::class::extern "C" void kernel_main(void* multiboot_structure, unsigned int /*magicNumber*/) {
 cpp::class::	kernel_init();
-cpp::class::	desktop_init();
 cpp::class::	terminal_init();
 cpp::class:://	terminal_writestring("Hello World!\nWelcome to HirrixOS coded only in Linit");
 cpp::class::	while(1);
@@ -124,11 +127,14 @@ defvar::terminal_putentryat_x@0$kernel_init
 defvar::terminal_putentryat_y@0$kernel_init
 defvar::terminal_color@0$kernel_init
 action::call$terminal_init@kernel_init
+defvar::put_pixel_x_arg@0$kernel_init
+defvar::put_pixel_y_arg@0$kernel_init
+defvar::put_pixel_color_arg@-32769$kernel_init
+cpp::kernel_init::screenAddress = (char*) 0xA0000;
+action::call$terminal_init@kernel_init
+newfunc::put_pixel
+cpp::put_pixel::unsigned where = put_pixel_x_arg * 3 + put_pixel_y_arg * 2400;
 newfunc::desktop_init
-defvar::put_pixel_x_arg@0$desktop_init
-defvar::put_pixel_y_arg@0$desktop_init
-defvar::put_pixel_color_arg@-32769$desktop_init
-cpp::desktop_init::screenAddress = (char*) 0xA0000;
 defvar::put_pixel_x_arg@0$desktop_init
 defvar::put_pixel_y_arg@0$desktop_init
 defvar::put_pixel_color_arg@16711680$desktop_init
@@ -137,9 +143,3 @@ defvar::put_pixel_x_arg@1$desktop_init
 defvar::put_pixel_y_arg@0$desktop_init
 defvar::put_pixel_color_arg@16711680$desktop_init
 action::call$put_pixel@desktop_init
-addvar::put_pixel_x_arg
-addvar::put_pixel_y_arg
-addvar::put_pixel_color_arg
-cpp::class::unsigned char* screenAddress;
-newfunc::put_pixel
-cpp::put_pixel::unsigned where = put_pixel_x_arg * 3 + put_pixel_y_arg * 2400;
